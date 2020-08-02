@@ -15,9 +15,16 @@ while(cap.isOpened()):
   ret, frame = cap.read()
   if ret == True:
 
-    print(frame)
+    # Step 1: Frame processing/improvement
+
+    # Step 2: Edge detection
+    frame_edges = cv2.Canny(frame, 200, 200)
+
+    # Step 3: Shape description
+
     # Display the resulting frame
-    cv2.imshow('Frame',frame)
+    cv2.imshow('Original Video', frame)
+    cv2.imshow('Edges Video', frame_edges)
 
     # Press Q on keyboard to  exit
     if cv2.waitKey(25) & 0xFF == ord('q'):
