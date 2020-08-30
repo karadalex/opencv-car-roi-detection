@@ -18,13 +18,13 @@ while(cap.isOpened()):
   ret, frame = cap.read()
   if ret == True:
 
-    # Step 1: Frame processing/improvement
-    frame = blurring(frame)
+    # Add noise
+    frame = saltAndPepperNoise(frame, 0.1)
 
-    # Step 2: Edge detection
+    # Edge detection
     frame_edges = cv2.Canny(frame, 200, 200)
 
-    # Step 3: Shape description
+    # Shape description
 
     # Display the resulting frame
     cv2.imshow('Original Video', frame)
