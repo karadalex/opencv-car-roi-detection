@@ -20,6 +20,7 @@ while(cap.isOpened()):
 
     # Add noise
     frame = saltAndPepperNoise(frame, 0.1)
+    frame = gaussianNoise(frame)
 
     # Edge detection
     frame_edges = cv2.Canny(frame, 200, 200)

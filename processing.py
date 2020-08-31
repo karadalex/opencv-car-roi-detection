@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 import random
+import math
+from helpers import *
 
 
 def blurring(image, radius=2):
@@ -49,5 +51,13 @@ def saltAndPepperNoise(image, percentage):
     return image
 
 
-def gaussianNoise(image):
-    pass
+def gaussianNoise(image, power=1):
+    # Get size of image
+    (rows, cols, channels) = image.shape
+    norm_image = linearMap(image, 0, 255, -1, 1)
+    noise = np.random.normal(0, math.sqrt(power), [rows, cols])
+    noise = linearMap(noise, noise.min(), noise.max(), -1, 1)
+    for c in range(channels):
+        norm_image[:,:,c] = norm_image[:,:,c] + noise
+    image = linearMap(norm_image, norm_image.min(), norm_image.max(), 0, 255).astype(np.uint8)
+    return image
