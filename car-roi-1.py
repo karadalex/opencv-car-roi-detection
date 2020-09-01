@@ -18,17 +18,29 @@ while(cap.isOpened()):
   ret, frame = cap.read()
   if ret == True:
 
+    # Create ROI mask
+    roi_mask = np.zeros(frame.shape[0:2])
+    roi_mask[int(frame.shape[0]/2):frame.shape[0], :] = np.ones((frame.shape[0]-int(frame.shape[0]/2), frame.shape[1]))
+    roi_mask = roi_mask.astype(np.uint8)
+    print(roi_mask)
+
     # Step 1: Frame processing/improvement
     frame = blurring(frame)
 
+    # Apply mask
+    masked_frame = np.zeros(frame.shape).astype(np.uint8)
+    for c in range(frame.shape[2]):
+      masked_frame[:,:,c] = frame[:,:,c] * roi_mask
+
     # Step 2: Edge detection
-    frame_edges = cv2.Canny(frame, 200, 200)
+    frame_edges = cv2.Canny(masked_frame, 200, 200)
 
     # Step 3: Shape description
 
     # Display the resulting frame
     cv2.imshow('Original Video', frame)
     cv2.imshow('Edges Video', frame_edges)
+    cv2.imshow('ROI Mask', roi_mask*255)
 
     # Keep previous frame
     prev_frame = frame
