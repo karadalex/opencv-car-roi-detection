@@ -36,6 +36,9 @@ def saltAndPepperNoise(image, percentage):
     Args:
         image (opencv image): Original image to add noise to
         percentage (float): From 0 to 1, percentage of pixels that have noise
+
+    Returns:
+        [type]: [description]
     """
     # Get size of image
     (rows, cols, _) = image.shape
@@ -52,12 +55,18 @@ def saltAndPepperNoise(image, percentage):
 
 
 def gaussianNoise(image, power=1):
-    # Get size of image
-    (rows, cols, channels) = image.shape
-    norm_image = linearMap(image, 0, 255, -1, 1)
-    noise = np.random.normal(0, math.sqrt(power), [rows, cols])
-    noise = linearMap(noise, noise.min(), noise.max(), -1, 1)
-    for c in range(channels):
-        norm_image[:,:,c] = norm_image[:,:,c] + noise
-    image = linearMap(norm_image, norm_image.min(), norm_image.max(), 0, 255).astype(np.uint8)
+    """[summary]
+
+    Args:
+        image ([type]): [description]
+        power (int, optional): [description]. Defaults to 1.
+
+    Returns:
+        [type]: [description]
+    """
+    noise = np.zeros(image.shape).astype(np.uint8)
+    mean = 0
+    sigma = math.sqrt(power)
+    cv2.randn(noise, mean, (sigma, sigma, sigma))
+    image = cv2.add(image, noise)
     return image
