@@ -24,8 +24,13 @@ while(cap.isOpened()):
     frame = saltAndPepperNoise(frame, 0.01)
     frame = gaussianNoise(frame, 400)
 
+    # Remove noise: first remove salt-and-pepper noise
+    # and then remove gaussian noise
+    clean_frame = cv2.medianBlur(frame, 5)
+    clean_frame = blurring(frame)
+
     # Apply 1st algorithm to noisy frame
-    roi_mask, masked_frame = algorithm1(frame)
+    roi_mask, masked_frame = algorithm1(clean_frame)
 
     # Display the resulting frame
     cv2.imshow('Original Video', original_frame)
@@ -39,10 +44,10 @@ while(cap.isOpened()):
     # Press S on keyboard to save images
     key = cv2.waitKey(25)
     if key == ord('s'):
-      cv2.imwrite('original3.png', original_frame)
-      cv2.imwrite('noisy3.png', frame)
-      cv2.imwrite('roi-mask3.png', roi_mask*255)
-      cv2.imwrite('masked_frame3.png', masked_frame)
+      cv2.imwrite('original5.png', original_frame)
+      cv2.imwrite('noisy5.png', frame)
+      cv2.imwrite('roi-mask5.png', roi_mask*255)
+      cv2.imwrite('masked_frame5.png', masked_frame)
     # Press Q on keyboard to  exit
     if key == ord('q'):
       break

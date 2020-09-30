@@ -20,16 +20,6 @@ def blurring(image, radius=2):
     return filtered_img
 
 
-def medianFilter(image, radius=2):
-    """[summary]
-
-    Args:
-        image ([type]): [description]
-        radius (int, optional): [description]. Defaults to 2.
-    """
-    return image
-
-
 def saltAndPepperNoise(image, percentage):
     """[summary]
 
