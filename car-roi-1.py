@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from processing import *
+from algorithms import algorithm1
 
 
 # Create a VideoCapture object and read from input file
@@ -18,29 +19,12 @@ while(cap.isOpened()):
   ret, frame = cap.read()
   if ret == True:
 
-    # Create ROI mask
-    roi_mask = np.zeros(frame.shape[0:2])
-    roi_mask[int(3*frame.shape[0]/5):frame.shape[0], :] = np.ones((frame.shape[0]-int(3*frame.shape[0]/5), frame.shape[1]))
-    roi_mask = roi_mask.astype(np.uint8)
-
-    # Step 1: Frame processing/improvement
-    frame = blurring(frame)
-
-    # Apply mask
-    masked_frame = np.zeros(frame.shape).astype(np.uint8)
-    for c in range(frame.shape[2]):
-      masked_frame[:,:,c] = frame[:,:,c] * roi_mask
-
-    # Step 2: Edge detection
-    frame_edges = cv2.Canny(masked_frame, 200, 200)
-
-    # Step 3: Shape description
+    roi_mask, masked_frame = algorithm1(frame)
 
     # Display the resulting frame
     cv2.imshow('Original Video', frame)
     cv2.imshow('ROI Mask', roi_mask*255)
     cv2.imshow('ROI Video', masked_frame)
-    # cv2.imshow('Edges Video', frame_edges)
 
     # Keep previous frame
     prev_frame = frame
