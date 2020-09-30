@@ -27,7 +27,7 @@ def medianFilter(image, radius=2):
         image ([type]): [description]
         radius (int, optional): [description]. Defaults to 2.
     """
-    pass
+    return image
 
 
 def saltAndPepperNoise(image, percentage):
@@ -70,3 +70,20 @@ def gaussianNoise(image, power=1):
     cv2.randn(noise, mean, (sigma, sigma, sigma))
     image = cv2.add(image, noise)
     return image
+
+
+def applyMaskToFrame(frame, mask):
+    """Apply mask to frame
+
+    Args:
+        frame (opencv image): The image to apply the mask to
+        mask (ndarray): Binary one channel mask
+
+    Returns:
+        [opencv image]: The original frame multiplied by the mask (bitwise and operation) 
+    """
+    masked_frame = np.zeros(frame.shape).astype(np.uint8)
+    for c in range(frame.shape[2]):
+        masked_frame[:,:,c] = frame[:,:,c] * mask
+    
+    return masked_frame
