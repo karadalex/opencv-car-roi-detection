@@ -27,7 +27,7 @@ while(cap.isOpened()):
     # Remove noise: first remove salt-and-pepper noise
     # and then remove gaussian noise
     clean_frame = cv2.medianBlur(frame, 5)
-    clean_frame = blurring(frame)
+    clean_frame = blurring(clean_frame)
 
     # Apply 1st algorithm to noisy frame
     masked_frame, roi_mask, roi_mask1, roi_mask2, roi_mask3 = algorithm2(clean_frame)
