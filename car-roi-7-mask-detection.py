@@ -5,6 +5,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from drawnow import drawnow, figure
 from processing import *
 from algorithms import algorithm2
+import time
 
 
 # Create a VideoCapture object and read from input file
@@ -14,6 +15,9 @@ cap = cv2.VideoCapture('april21.avi')
 # Check if camera opened successfully
 if (cap.isOpened()== False): 
   print("Error opening video stream or file")
+
+prev_frame_time = time.time()
+fps_list = []
 
 # Read until video is completed
 while(cap.isOpened()):
@@ -45,6 +49,13 @@ while(cap.isOpened()):
     # Keep previous frame
     prev_frame = frame
 
+    # Calculate fps metric
+    current_frame_time = time.time()
+    seconds = current_frame_time - prev_frame_time
+    prev_frame_time = current_frame_time
+    fps = round(1/seconds, 2)
+    fps_list.append(fps)
+
     # Press S on keyboard to save images
     key = cv2.waitKey(25)
     if key == ord('s'):
@@ -61,6 +72,13 @@ while(cap.isOpened()):
   # Break the loop
   else: 
     break
+
+# Calculate total fps statistics
+fps_list = np.array(fps_list)
+fps_avg = np.average(fps_list)
+fps_std = np.std(fps_list)
+print("FPS average: ", fps_avg)
+print("FPS standard deviation: ", fps_std)
 
 # When everything done, release the video capture object
 cap.release()
