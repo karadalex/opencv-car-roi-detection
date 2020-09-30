@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from processing import *
+from algorithms import algorithm1
 
 
 # Create a VideoCapture object and read from input file
@@ -17,25 +18,33 @@ while(cap.isOpened()):
   # Capture frame-by-frame
   ret, frame = cap.read()
   if ret == True:
+    original_frame = np.copy(frame)
 
     # Add noise
-    frame = saltAndPepperNoise(frame, 0.1)
-    frame = gaussianNoise(frame)
+    frame = saltAndPepperNoise(frame, 0.01)
+    frame = gaussianNoise(frame, 400)
 
-    # Edge detection
-    frame_edges = cv2.Canny(frame, 200, 200)
-
-    # Shape description
+    # Apply 1st algorithm to noisy frame
+    roi_mask, masked_frame = algorithm1(frame)
 
     # Display the resulting frame
-    cv2.imshow('Original Video', frame)
-    cv2.imshow('Edges Video', frame_edges)
+    cv2.imshow('Original Video', original_frame)
+    cv2.imshow('Noisy Video', frame)
+    cv2.imshow('ROI Mask', roi_mask*255)
+    cv2.imshow('ROI Video', masked_frame)
 
     # Keep previous frame
     prev_frame = frame
 
+    # Press S on keyboard to save images
+    key = cv2.waitKey(25)
+    if key == ord('s'):
+      cv2.imwrite('original3.png', original_frame)
+      cv2.imwrite('noisy3.png', frame)
+      cv2.imwrite('roi-mask3.png', roi_mask*255)
+      cv2.imwrite('masked_frame3.png', masked_frame)
     # Press Q on keyboard to  exit
-    if cv2.waitKey(25) & 0xFF == ord('q'):
+    if key == ord('q'):
       break
 
   # Break the loop
