@@ -138,3 +138,7 @@ dmypy.json
 cython_debug/
 
 .vscode
+
+# Output images
+*.png
+*.jpg
