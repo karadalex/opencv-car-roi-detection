@@ -20,9 +20,8 @@ while(cap.isOpened()):
 
     # Create ROI mask
     roi_mask = np.zeros(frame.shape[0:2])
-    roi_mask[int(frame.shape[0]/2):frame.shape[0], :] = np.ones((frame.shape[0]-int(frame.shape[0]/2), frame.shape[1]))
+    roi_mask[int(3*frame.shape[0]/5):frame.shape[0], :] = np.ones((frame.shape[0]-int(3*frame.shape[0]/5), frame.shape[1]))
     roi_mask = roi_mask.astype(np.uint8)
-    print(roi_mask)
 
     # Step 1: Frame processing/improvement
     frame = blurring(frame)
@@ -39,14 +38,21 @@ while(cap.isOpened()):
 
     # Display the resulting frame
     cv2.imshow('Original Video', frame)
-    cv2.imshow('Edges Video', frame_edges)
     cv2.imshow('ROI Mask', roi_mask*255)
+    cv2.imshow('ROI Video', masked_frame)
+    # cv2.imshow('Edges Video', frame_edges)
 
     # Keep previous frame
     prev_frame = frame
 
+    # Press S on keyboard to save images
+    key = cv2.waitKey(25)
+    if key == ord('s'):
+      cv2.imwrite('original1.png', frame)
+      cv2.imwrite('roi-mask1.png', roi_mask*255)
+      cv2.imwrite('masked_frame1.png', masked_frame)
     # Press Q on keyboard to  exit
-    if cv2.waitKey(25) & 0xFF == ord('q'):
+    if key == ord('q'):
       break
 
   # Break the loop
