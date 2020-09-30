@@ -26,7 +26,7 @@ roi_mask = []
 
 # ROI parameters:
 # Histogram thresholds
-lower_threshold = 115
+lower_threshold = 120
 upper_threshold = 130
 
 def draw_fig():
@@ -54,10 +54,28 @@ while(cap.isOpened()):
     # Calculate ROI mask
     roi_mask1 = (gray > lower_threshold).astype(np.uint8)
     roi_mask2 = (gray < upper_threshold).astype(np.uint8)
-    roi_mask = roi_mask1 * roi_mask2 * 255
-    print(roi_mask)
+    roi_mask3 = roi_mask1 * roi_mask2
+    # Sum number of white pixels per row
+    white_pixels = np.sum(roi_mask3, axis=1)
+    rowNum = len(white_pixels)
+    # Scan roi_mask3 top-to-bottom and bottom-to-top to get the roi
+    topY = 0
+    bottomY = rowNum-1
+    for i in range(rowNum):
+      if white_pixels[i] >= 60:
+        topY = i
+        break
+    for i in reversed(range(rowNum)):
+      if white_pixels[i] >= 60:
+        bottomY = i
+        break
+    roi_mask = np.zeros(roi_mask3.shape).astype(np.uint8)
+    roi_mask[topY:bottomY, :] = 1
 
     # Apply ROI mask to frame
+    masked_frame = np.zeros(frame.shape).astype(np.uint8)
+    for c in range(frame.shape[2]):
+      masked_frame[:,:,c] = frame[:,:,c] * roi_mask
     
     # Step 2: Edge detection
     frame_edges = cv2.Canny(frame, 200, 200)
@@ -66,14 +84,24 @@ while(cap.isOpened()):
 
     # Display the resulting frame
     cv2.imshow('Original Video', frame)
-    cv2.imshow('Edges Video', frame_edges)
-    cv2.imshow('ROI Mask', roi_mask)
+    cv2.imshow('ROI Mask', roi_mask*255)
+    cv2.imshow('ROI Video', masked_frame)
+    # cv2.imshow('Edges Video', frame_edges)
 
     # Keep previous frame
     prev_frame = frame
 
+    # Press S on keyboard to save images
+    key = cv2.waitKey(25)
+    if key == ord('s'):
+      cv2.imwrite('original2.png', frame)
+      cv2.imwrite('roi-mask2-1.png', roi_mask1*255)
+      cv2.imwrite('roi-mask2-2.png', roi_mask2*255)
+      cv2.imwrite('roi-mask2-3.png', roi_mask3*255)
+      cv2.imwrite('roi-mask2.png', roi_mask*255)
+      cv2.imwrite('masked_frame1.png', masked_frame)
     # Press Q on keyboard to  exit
-    if cv2.waitKey(25) & 0xFF == ord('q'):
+    if key == ord('q'):
       break
 
   # Break the loop
