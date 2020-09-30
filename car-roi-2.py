@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from drawnow import drawnow, figure
 from processing import *
+from algorithms import algorithm2
 
 
 # Create a VideoCapture object and read from input file
@@ -24,15 +25,12 @@ gray = []
 hist = []
 roi_mask = []
 
-# ROI parameters:
-# Histogram thresholds
-lower_threshold = 120
-upper_threshold = 130
 
 def draw_fig():
   global frame, gray, hist
   if frame.any():
     # convert to grayscale
+    # TODO: this needs to be replaced, because it is calculated twice in every frame!
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # show the plotting graph of an image 
@@ -48,45 +46,14 @@ while(cap.isOpened()):
   if ret == True:
 
     drawnow(draw_fig)
-    # Step 1: Frame processing/improvement
-    # frame = blurring(frame)
 
-    # Calculate ROI mask
-    roi_mask1 = (gray > lower_threshold).astype(np.uint8)
-    roi_mask2 = (gray < upper_threshold).astype(np.uint8)
-    roi_mask3 = roi_mask1 * roi_mask2
-    # Sum number of white pixels per row
-    white_pixels = np.sum(roi_mask3, axis=1)
-    rowNum = len(white_pixels)
-    # Scan roi_mask3 top-to-bottom and bottom-to-top to get the roi
-    topY = 0
-    bottomY = rowNum-1
-    for i in range(rowNum):
-      if white_pixels[i] >= 60:
-        topY = i
-        break
-    for i in reversed(range(rowNum)):
-      if white_pixels[i] >= 60:
-        bottomY = i
-        break
-    roi_mask = np.zeros(roi_mask3.shape).astype(np.uint8)
-    roi_mask[topY:bottomY, :] = 1
-
-    # Apply ROI mask to frame
-    masked_frame = np.zeros(frame.shape).astype(np.uint8)
-    for c in range(frame.shape[2]):
-      masked_frame[:,:,c] = frame[:,:,c] * roi_mask
-    
-    # Step 2: Edge detection
-    frame_edges = cv2.Canny(frame, 200, 200)
-
-    # Step 3: Shape description
+    # Apply ROI detection algorithm
+    masked_frame, roi_mask, roi_mask1, roi_mask2, roi_mask3 = algorithm2(frame)
 
     # Display the resulting frame
     cv2.imshow('Original Video', frame)
     cv2.imshow('ROI Mask', roi_mask*255)
     cv2.imshow('ROI Video', masked_frame)
-    # cv2.imshow('Edges Video', frame_edges)
 
     # Keep previous frame
     prev_frame = frame
